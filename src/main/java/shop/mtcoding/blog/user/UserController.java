@@ -22,13 +22,9 @@ public class UserController {
 @PostMapping("/login")
 public String login(UserRequest.LoginDTO requestDTO){
 
-
-    System.out.println(requestDTO); // toString -> @Data
-
     if(requestDTO.getUsername().length() < 3){
         return "error/400"; // ViewResolver 설정이 되어 있음. (앞 경로, 뒤 경로)
     }
-
     User user = userRepository.findByUsernameAndPassword(requestDTO);
 
     if(user == null){ // 조회 안됨 (401)
