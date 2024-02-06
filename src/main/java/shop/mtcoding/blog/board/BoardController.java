@@ -1,18 +1,21 @@
 package shop.mtcoding.blog.board;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.dialect.pagination.LimitOffsetLimitHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import shop.mtcoding.blog.user.User;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
-
+    private final HttpSession session;
     private final BoardRepository boardRepository;
 
     @GetMapping({ "/", "/board" })
@@ -26,6 +29,15 @@ public class BoardController {
 
     @GetMapping("/board/saveForm")
     public String saveForm() {
+        //   /board/saveForm 요청(Get)이 온다
+        //   session 영역에 sessionUser 키값에 user 객체 있는지 체크
+        //   값이 null 이면 로그인 페이지로 리다이렉션
+        //   값이 null 이 아니면, /board/saveForm 으로 이동
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser==null){
+            return "redirect:/loginForm";
+        }
         return "board/saveForm";
     }
 
