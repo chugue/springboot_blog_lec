@@ -65,6 +65,8 @@ public String login(UserRequest.LoginDTO requestDTO){
 
     @GetMapping("/logout")
     public String logout() {
-        return "redirect:/";
+        session.invalidate();
+    
+    return "redirect:/";
     }
 }
