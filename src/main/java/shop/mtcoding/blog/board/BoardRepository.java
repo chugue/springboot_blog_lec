@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,6 +12,17 @@ import java.util.List;
 @Repository
 public class BoardRepository {
     private final EntityManager em;
+
+
+    @Transactional
+    public void save(BoardRequest.SaveDTO requestDTO, int userId) {
+        Query query = em.createNativeQuery("insert into board_tb(title, content, user_id) values (?, ?, ?, now())");
+        query.setParameter(1, requestDTO.getTitle());
+        query.setParameter(2, requestDTO.getContent());
+        query.setParameter(3, userId);
+
+        query.executeUpdate();
+    }
 
     public List<Board> findAll(){
         Query query = em.createNativeQuery("select * from board_tb order by id desc", Board.class);
