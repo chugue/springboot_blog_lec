@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import shop.mtcoding.blog.user.User;
 
 import java.util.HashMap;
@@ -18,6 +15,24 @@ import java.util.List;
 public class BoardController {
     private final HttpSession session;
     private final BoardRepository boardRepository;
+
+    @PostMapping("/board/{id}/update")  // @RequestBody는 바디데이터를 JSON타입으로 변환해준다.
+    public String update (@PathVariable int id, BoardRequest.UpdateDTO requestDTO) {
+        //1. 인증 체크
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser == null) {
+            return "redirect:/loginForm";
+        }
+        //2. 권한 체크
+        Board board = boardRepository.findById(id);
+        if (board.getUserId() != sessionUser.getId()){
+            return "error/403";
+        }
+        //3. 핵심 로직
+        //update board_tb set title = ?, content = ? where id = ?;
+        boardRepository.update(requestDTO, id);
+        return "redirect:/board/" + id;
+    }
 
     // 게시글 수정 페이지 정보를 조회해서 뿌리는 책임을 가진다.
     @GetMapping("/board/{id}/updateForm")
@@ -30,6 +45,9 @@ public class BoardController {
         // 모델 위임 (id로 board를 조회)
         Board board = boardRepository.findById(id);
         // 권한 체크
+        if (board == null){
+            return "error/400";
+        }
         if (board.getUserId() != sessionUser.getId()){
             return "error/403";
         }
