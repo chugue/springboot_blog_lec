@@ -17,7 +17,7 @@ public class BoardController {
     private final BoardRepository boardRepository;
 
     @PostMapping("/board/{id}/update")  // @RequestBody는 바디데이터를 JSON타입으로 변환해준다.
-    public String update (@PathVariable int id, BoardRequest.UpdateDTO requestDTO) {
+    public String update(@PathVariable int id, BoardRequest.UpdateDTO requestDTO) {
         //1. 인증 체크
         User sessionUser = (User) session.getAttribute("sessionUser");
         if (sessionUser == null) {
@@ -25,7 +25,7 @@ public class BoardController {
         }
         //2. 권한 체크
         Board board = boardRepository.findById(id);
-        if (board.getUserId() != sessionUser.getId()){
+        if (board.getUserId() != sessionUser.getId()) {
             return "error/403";
         }
         //3. 핵심 로직
@@ -36,7 +36,7 @@ public class BoardController {
 
     // 게시글 수정 페이지 정보를 조회해서 뿌리는 책임을 가진다.
     @GetMapping("/board/{id}/updateForm")
-    public String updateForm (@PathVariable int id, HttpServletRequest request) {
+    public String updateForm(@PathVariable int id, HttpServletRequest request) {
         // 인증 체크
         User sessionUser = (User) session.getAttribute("sessionUser");
         if (sessionUser == null) {
@@ -45,10 +45,10 @@ public class BoardController {
         // 모델 위임 (id로 board를 조회)
         Board board = boardRepository.findById(id);
         // 권한 체크
-        if (board == null){
+        if (board == null) {
             return "error/400";
         }
-        if (board.getUserId() != sessionUser.getId()){
+        if (board.getUserId() != sessionUser.getId()) {
             return "error/403";
         }
         // 가방에 담기
@@ -136,4 +136,5 @@ public class BoardController {
         request.setAttribute("pageOwner", pageOwner);
         return "board/detail";
     }
+
 }
