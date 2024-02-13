@@ -25,7 +25,7 @@ public class SecurityConfig {
     @Bean//인증이 필요한 페이지
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-//        http.csrf(c -> c.disable());
+        http.csrf(c -> c.disable());
 
         http.authorizeHttpRequests(a -> {
             a.requestMatchers(RegexRequestMatcher.regexMatcher("/board/\\d+")).permitAll()
