@@ -57,6 +57,7 @@ public class BoardRepository {
         return responseDTO;
     }
 
+    @Transactional
     public void deleteById(int id) {
         Query query = em.createNativeQuery("delete from board_tb where id = ?");
         query.setParameter(1, id);

@@ -12,6 +12,7 @@ public class UserRepository {
     // 스프링이 만들어서 IoC에 넣어둔다.
     // DI에서 꺼내 쓰기만 하면된다.
     private EntityManager em;
+
     // 생성자 주입 (DI 코드)
     public UserRepository(EntityManager em) {
         this.em = em;
@@ -42,10 +43,25 @@ public class UserRepository {
         Query query = em.createNativeQuery("select * from user_tb where username=? and password=?", User.class);
         query.setParameter(1, requestDTO.getUsername());
         query.setParameter(2, requestDTO.getPassword());
+        try {
+            User user = (User) query.getSingleResult();
+            return user;
+        } catch (Exception e){
+            return null;
+        }
 
-        User user = (User) query.getSingleResult();
-        return user;
     }
 
 
+    public Object findByUsername(String username) {
+        Query query = em.createNativeQuery("select * from user_tb where username=?", User.class);
+        query.setParameter(1, username);
+        try {
+            User user = (User) query.getSingleResult();
+            return user;
+        } catch (Exception e){
+            return null;
+
+        }
+    }
 }
