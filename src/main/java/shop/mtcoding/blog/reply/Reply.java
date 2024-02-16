@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int no;
+    private int id;
     private String comment;
     private int userId;
     private int boardId;

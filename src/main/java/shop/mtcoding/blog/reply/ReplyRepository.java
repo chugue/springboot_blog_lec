@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog.board.Board;
 import shop.mtcoding.blog.board.BoardRequest;
 import shop.mtcoding.blog.board.BoardResponse;
+import shop.mtcoding.blog.user.User;
 
 import java.util.List;
 
@@ -15,6 +16,21 @@ import java.util.List;
 @Repository
 public class ReplyRepository {
     private final EntityManager em;
+
+    @Transactional
+    public List<BoardResponse.ReplyDTO> findByBoardId(int boardID, User sessionUser) {
+        String q = """
+                select rt.id, rt.user_id, rt.comment, ut.username
+                from reply_tb rt 
+                inner join user_tb ut 
+                on rt.user_id = ut.id where rt.board_id = ?
+                """;
+        Query query = em.createNativeQuery(q);
+        query.setParameter(1, boardID);
+        List<Object[]> obs = query.getResultList();
+        return obs.stream().map(row -> new BoardResponse.ReplyDTO(row, sessionUser)).toList();
+    }
+
 
     @Transactional
     public void save(ReplyRequest.WriteDTO requestDTO, int userId) {
