@@ -124,6 +124,7 @@ public class BoardController {
             request.setAttribute("last", allPageCount == page + 1);
             request.setAttribute("prev", page - 1);
             request.setAttribute("next", page + 1);
+            request.setAttribute("keyword", "");
         } else {
             boardList = boardRepository.findAll(page, keyword);
             //전체 페이지 개수
