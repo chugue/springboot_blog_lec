@@ -101,10 +101,47 @@ public class BoardController {
     }
 
 
-    @GetMapping({"/", "/board"})
-    public String index(HttpServletRequest request) {
-        List<Board> boardList = boardRepository.findAll();
-        request.setAttribute("boardList", boardList);
+    // localhost:8080?page=1
+    // localhost:8080
+    @GetMapping("/")
+    public String index(HttpServletRequest request,
+                        @RequestParam(defaultValue = "0") Integer page,
+                        @RequestParam(defaultValue = "") String keyword) {
+
+        // isEmpty -> null, 공백
+        // isBlank -> null, 공백, 화이트스페이스
+        List<Board> boardList = null;
+        if (keyword.isBlank()) {
+            boardList = boardRepository.findAll(page);
+            //전체 페이지 개수
+            int count = boardRepository.count().intValue();
+
+            int remainder = count % 3 == 0 ? 0 : 1;
+            int allPageCount = count / 3 + remainder;
+
+            request.setAttribute("boardList", boardList);
+            request.setAttribute("first", page == 0);
+            request.setAttribute("last", allPageCount == page + 1);
+            request.setAttribute("prev", page - 1);
+            request.setAttribute("next", page + 1);
+        } else {
+            boardList = boardRepository.findAll(page, keyword);
+            //전체 페이지 개수
+            int count = boardRepository.count(keyword).intValue();
+            // 5 -> 2 page
+            // 6 -> 2 page
+            // 7 -> 3 page
+            // 8 -> 3 page
+            int remainder = count % 3 == 0 ? 0 : 1;
+            int allPageCount = count / 3 + remainder;
+
+            request.setAttribute("boardList", boardList);
+            request.setAttribute("first", page == 0);
+            request.setAttribute("last", allPageCount == page + 1);
+            request.setAttribute("prev", page - 1);
+            request.setAttribute("next", page + 1);
+            request.setAttribute("keyword", keyword);
+        }
         return "index";
     }
 

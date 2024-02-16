@@ -7,7 +7,12 @@
 </h1>
 
 <div class="container p-5">
-
+    <div class="d-flex justify-content-end mb-3">
+        <form class="d-flex mb-2" action="/" method="get">
+            <input class="form-control" type="text" placeholder="serach..." name="keyword" required/>
+            <button class="btn btn-primary" type="submit">검색</button>
+        </form>
+    </div>
     {{#boardList}}
         <div class="card mb-3">
             <div class="card-body">
@@ -19,8 +24,8 @@
 
 
     <ul class="pagination d-flex justify-content-center">
-        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        <li class="page-item {{#first}}disabled{{/first}}"><a class="page-link" href="?page={{prev}}&keyword={{keyword}}">Previous</a></li>
+        <li class="page-item {{#last}}disabled{{/last}}"><a class="page-link" href="?page={{next}}&keyword={{keyword}}">Next</a></li>
     </ul>
 
 </div>

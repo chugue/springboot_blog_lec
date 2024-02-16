@@ -13,6 +13,24 @@ import java.util.List;
 public class BoardRepository {
     private final EntityManager em;
 
+    public Long count() {
+        String q = """
+                select count(*) from board_tb
+                """;
+        Query query = em.createNativeQuery(q);
+        return (Long) query.getSingleResult();
+    }
+
+    public Long count(String keyword) {
+        String q = """
+                select count(*) from board_tb where title like ?
+                """;
+        Query query = em.createNativeQuery(q);
+        query.setParameter(1, "%" + keyword + "%");
+        return (Long) query.getSingleResult();
+    }
+
+
     @Transactional
     public void save(BoardRequest.SaveDTO requestDTO, int userId) {
         Query query = em.createNativeQuery("insert into board_tb(title, content, user_id, created_at) values (?, ?, ?, now())");
@@ -23,8 +41,23 @@ public class BoardRepository {
         query.executeUpdate();
     }
 
-    public List<Board> findAll() {
-        Query query = em.createNativeQuery("select * from board_tb order by id desc", Board.class);
+    public List<Board> findAll(Integer page, String keyword) {
+        String q = """
+                select * from board_tb where title like ? order by id desc limit ? , 3
+                """;
+        Query query = em.createNativeQuery(q, Board.class);
+        query.setParameter(1, "%" + keyword + "%");
+        query.setParameter(2, page * 3);
+        return query.getResultList();
+    }
+
+
+    public List<Board> findAll(Integer page) {
+        String q = """
+                select * from board_tb order by id desc limit ? , 3
+                """;
+        Query query = em.createNativeQuery(q, Board.class);
+        query.setParameter(1, page * 3);
         return query.getResultList();
     }
 
