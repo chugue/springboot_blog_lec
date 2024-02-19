@@ -18,9 +18,6 @@ public class BoardResponse {
         public void isBoardOnwer(User sessionUser){
             if (sessionUser == null) boardOwner = false;
             else boardOwner = true;
-
-
-
         }
     }
 
