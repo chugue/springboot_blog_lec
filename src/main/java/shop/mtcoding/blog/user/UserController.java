@@ -4,10 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import shop.mtcoding.blog._core.util.Script;
 
 
 @RequiredArgsConstructor // final이 붙은 애들에 대한 생성자를 만들어줌
@@ -71,11 +69,16 @@ public class UserController {
         return "redirect:/"; // 컨트롤러가 존재하면 무조건 redirect 외우기
     }
 
+    @ResponseBody
     @PostMapping("/join")
-    public String join(UserRequest.JoinDTO requestDTO) {
+    public  String join(UserRequest.JoinDTO requestDTO) {
         System.out.println(requestDTO);
 
-        userRepository.save(requestDTO); // 모델에 위임하기
+        try {
+            userRepository.save(requestDTO); // 모델에 위임하기
+        } catch (Exception e){
+            throw new RuntimeException("아이디가 중복되었어요.");
+        }
         return "redirect:/loginForm";
     }
 
