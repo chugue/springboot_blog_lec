@@ -24,7 +24,7 @@ public class BoardController {
         //1. 인증 체크
         User sessionUser = (User) session.getAttribute("sessionUser");
         if (sessionUser == null) {
-            return "redirect:/loginForm";
+            throw new RuntimeException("로그인을 하셔야 됩니다. ");
         }
         //2. 권한 체크
         Board board = boardRepository.findById(id);

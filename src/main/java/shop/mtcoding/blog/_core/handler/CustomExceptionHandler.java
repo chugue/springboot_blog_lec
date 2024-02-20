@@ -8,7 +8,10 @@ import shop.mtcoding.blog._core.util.Script;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class) // 에러 타입을 정하는 곳
-    public @ResponseBody String error1(Exception e){
+    public @ResponseBody String error1(Exception e) {
         return Script.back(e.getMessage());
     }
+
+
+
 }

@@ -3,6 +3,7 @@ package shop.mtcoding.blog.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import shop.mtcoding.blog._core.util.Script;
@@ -16,17 +17,17 @@ public class UserController {
     private final HttpSession session;
 
     @PostMapping("/user/update")
-    public String update (UserRequest.UserUpdateDTO requestDTO, HttpServletRequest request) {
+    public String update(UserRequest.UserUpdateDTO requestDTO, HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         if (sessionUser == null) {
             return "redirect:/";
         }
-        if (requestDTO.getPassword().length() > 20){
+        if (requestDTO.getPassword().length() > 20) {
             request.setAttribute("msg", "비밀번호는 20자 이하여야 합니다.");
             request.setAttribute("status", "400");
             return "error/40x";
         }
-        if (requestDTO.getPassword().equals(sessionUser.getPassword())){
+        if (requestDTO.getPassword().equals(sessionUser.getPassword())) {
             request.setAttribute("msg", "이전 비밀번호와 같습니다.");
             request.setAttribute("status", "400");
             return "error/40x";
@@ -42,7 +43,7 @@ public class UserController {
     public String updateForm(UserRequest.UserUpdateDTO requestDTO) {
         // 인증 체크
         User sessionUser = (User) session.getAttribute("sessionUser");
-        if (sessionUser == null){
+        if (sessionUser == null) {
             return "redirect:/loginForm";
         }
         return "user/updateForm";
@@ -56,30 +57,33 @@ public class UserController {
     public String login(UserRequest.LoginDTO requestDTO) {
 
         if (requestDTO.getUsername().length() < 3) {
-            return "error/400"; // ViewResolver 설정이 되어 있음. (앞 경로, 뒤 경로)
+            throw new RuntimeException("username길이가 짧습니다."); // ViewResolver 설정이 되어 있음. (앞 경로, 뒤 경로)
         }
 
-        User user = userRepository.findByUsernameAndPassword(requestDTO);
-        if (user == null) { // 조회 안됨 (401)
-            return "error/401";
-        } else { // 조회 됐음 (인증됨)
-            session.setAttribute("sessionUser", user); // 락카에 담음 (StateFul)
+        User user = userRepository.findByUsername(requestDTO.getUsername());
+        if (!BCrypt.checkpw(requestDTO.getPassword(), user.getPassword())) {
+            throw new RuntimeException("패스워드가 틀렸습니다.");
         }
+        session.setAttribute("sessionUser", user); // 락카에 담음 (StateFul)
 
         return "redirect:/"; // 컨트롤러가 존재하면 무조건 redirect 외우기
     }
 
     @ResponseBody
     @PostMapping("/join")
-    public  String join(UserRequest.JoinDTO requestDTO) {
+    public String join(UserRequest.JoinDTO requestDTO) {
         System.out.println(requestDTO);
+
+        String rawPassword = requestDTO.getPassword();
+        String encPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        requestDTO.setPassword(encPassword);
 
         try {
             userRepository.save(requestDTO); // 모델에 위임하기
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("아이디가 중복되었어요.");
         }
-        return "redirect:/loginForm";
+        return Script.href("/");
     }
 
     @GetMapping("/joinForm")
