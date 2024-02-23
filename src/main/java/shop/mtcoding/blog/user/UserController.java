@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import shop.mtcoding.blog._core.util.ApiUtil;
 import shop.mtcoding.blog._core.util.Script;
 
 
@@ -15,6 +16,16 @@ public class UserController {
     // 자바는 final 변수는 반드시 초기화가 되어야함.
     private final UserRepository userRepository;
     private final HttpSession session;
+
+    @GetMapping("/api/user-same-check")
+    public @ResponseBody ApiUtil<?> usernameSameCheck(String username){
+        User user = userRepository.findByUsername(username);
+        if (user == null){ //회원가입 가능
+            return new ApiUtil<>(true);
+        } else {
+            return new ApiUtil<>(false);
+        }
+    }
 
     @PostMapping("/user/update")
     public String update(UserRequest.UserUpdateDTO requestDTO, HttpServletRequest request) {
