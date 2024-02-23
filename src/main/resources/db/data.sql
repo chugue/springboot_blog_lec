@@ -16,3 +16,4 @@ insert into reply_tb(comment, board_id, user_id, created_at) values('댓글1', 1
 insert into reply_tb(comment, board_id, user_id, created_at) values('댓글2', 4, 1, now());
 insert into reply_tb(comment, board_id, user_id, created_at) values('댓글3', 4, 1, now());
 insert into reply_tb(comment, board_id, user_id, created_at) values('댓글4', 4, 2, now());
+
