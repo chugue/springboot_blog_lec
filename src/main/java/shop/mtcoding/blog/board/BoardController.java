@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import shop.mtcoding.blog.love.LoveRepository;
+import shop.mtcoding.blog.love.LoveResponse;
 import shop.mtcoding.blog.reply.Reply;
 import shop.mtcoding.blog.reply.ReplyRepository;
 import shop.mtcoding.blog.user.User;
@@ -18,6 +20,7 @@ public class BoardController {
     private final HttpSession session;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
+    private final LoveRepository loveRepository;
 
     @PostMapping("/board/{id}/update")  // @RequestBody는 바디데이터를 JSON타입으로 변환해준다.
     public String update(@PathVariable int id, BoardRequest.UpdateDTO requestDTO) {
@@ -164,11 +167,13 @@ public class BoardController {
         User sessionUser = (User) session.getAttribute("sessionUser");
         BoardResponse.DetailDTO boardDTO = boardRepository.findByIdWithUser(id);
         boardDTO.isBoardOnwer(sessionUser);
-
         List<BoardResponse.ReplyDTO> replyList = replyRepository.findByBoardId(id, sessionUser);
+        LoveResponse.DetailDTO loveDetailDTO = loveRepository.findLove(id, sessionUser.getId());
 
         request.setAttribute("board", boardDTO);
         request.setAttribute("replyList", replyList);
+        request.setAttribute("love", loveDetailDTO);
+
         return "board/detail";
     }
 
