@@ -15,10 +15,11 @@ public class BoardResponse {
         private String username;
         private Boolean boardOwner;
 
-        public void isBoardOnwer(User sessionUser){
+        public void isBoardOwner(User sessionUser){
             if (sessionUser == null) boardOwner = false;
             else boardOwner = true;
         }
+
     }
 
     @Data

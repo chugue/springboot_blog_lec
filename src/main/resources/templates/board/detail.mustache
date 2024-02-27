@@ -1,15 +1,17 @@
-{{>layout/header}}
+{{> /layout/header}}
 
 <div class="container p-5">
-    <!-- 수정삭제버튼 -->
-    <div class="d-flex justify-content-end">
-        {{#board.boardOwner}}
+
+    {{#board.boardOwner}}
+        <!-- 수정삭제버튼 -->
+        <div class="d-flex justify-content-end">
             <a href="/board/{{board.id}}/updateForm" class="btn btn-warning me-1">수정</a>
             <form action="/board/{{board.id}}/delete" method="post">
                 <button class="btn btn-danger">삭제</button>
             </form>
-        {{/board.boardOwner}}
-    </div>
+        </div>
+    {{/board.boardOwner}}
+
     <div class="d-flex justify-content-end">
         <b>작성자</b> : {{board.username}}
     </div>
@@ -23,12 +25,68 @@
         </div>
     </div>
 
+    <!--좋아요 부분-->
+    <div>
+        {{#love.isLove}}
+            <i id="love" onclick="loveToggle({{board.id}})" class="fas fa-heart text-danger"></i>
+        {{/love.isLove}}
+        {{^love.isLove}}
+            <i id="love" onclick="loveToggle({{board.id}})" class="far fa-heart"></i>
+        {{/love.isLove}}
+        <input type="hidden" id="love-id" value="{{love.id}}">
+        <span id="loveCount">{{love.loveCount}}</span>
+    </div>
+
+    <script>
+        function loveToggle(boardId) {
+
+            // 좋아요 하기
+            if($("#love").hasClass("far")){
+
+                let love = {
+                    boardId: boardId
+                }
+
+                $.ajax({
+                    url: "/api/love",
+                    type: "post",
+                    data: JSON.stringify(love),
+                    contentType: "application/json; charset=utf-8"
+                }).done((res) => {
+                    $("#love").removeClass("far");
+                    $("#love").addClass("text-danger");
+                    $("#love").addClass("fas");
+                    let loveCount = parseInt($("#loveCount").text(), 10);
+                    $("#loveCount").text(loveCount + 1);
+                }).fail((res) => {
+                    alert(res.responseJSON.msg);
+                });
+            }else{ // 좋아요 취소 하기
+                let loveId = $("#love-id").val();
+                $.ajax({
+                    url: "/api/love/" + loveId,
+                    type: "delete"
+                }).done((res) => {
+                    $("#love").removeClass("fas");
+                    $("#love").removeClass("text-danger");
+                    $("#love").addClass("far");
+                    let loveCount = parseInt($("#loveCount").text(), 10);
+                    $("#loveCount").text(loveCount - 1);
+                }).fail((res) => {
+                    alert(res.responseJSON.msg);
+                });
+            }
+
+
+        }
+    </script>
+
     <!-- 댓글 -->
     <div class="card mt-3">
         <!-- 댓글등록 -->
         <div class="card-body">
             <form action="/reply/save" method="post">
-                <input type="hidden" name="boardId" value = "{{board.id}}">
+                <input type="hidden" name="boardId" value="{{board.id}}">
                 <textarea class="form-control" rows="2" name="comment"></textarea>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-outline-primary mt-1">댓글등록</button>
@@ -41,23 +99,28 @@
             <b>댓글리스트</b>
         </div>
         <div class="list-group">
-            <!-- 댓글아이템 -->
+
             {{#replyList}}
+                <!-- 댓글아이템 -->
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div class="d-flex">
                         <div class="px-1 me-1 bg-primary text-white rounded">{{username}}</div>
                         <div>{{comment}}</div>
                     </div>
+
                     {{#replyOwner}}
                         <form action="/reply/{{id}}/delete" method="post">
                             <button class="btn">🗑</button>
                         </form>
                     {{/replyOwner}}
+
                 </div>
             {{/replyList}}
-            <!-- 댓글아이템 -->
+
+
+
         </div>
     </div>
 </div>
 
-{{>layout/footer}}
+{{> /layout/footer}}
