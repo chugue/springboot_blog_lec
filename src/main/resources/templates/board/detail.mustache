@@ -56,8 +56,8 @@
                     $("#love").removeClass("far");
                     $("#love").addClass("text-danger");
                     $("#love").addClass("fas");
-                    let loveCount = parseInt($("#loveCount").text(), 10);
-                    $("#loveCount").text(loveCount + 1);
+                    let loveCount = $("#loveCount").text();
+                    $("#loveCount").text(Number(loveCount) + 1);
                 }).fail((res) => {
                     alert(res.responseJSON.msg);
                 });
@@ -70,8 +70,8 @@
                     $("#love").removeClass("fas");
                     $("#love").removeClass("text-danger");
                     $("#love").addClass("far");
-                    let loveCount = parseInt($("#loveCount").text(), 10);
-                    $("#loveCount").text(loveCount - 1);
+                    let loveCount =parseInt($("#loveCount").text());
+                    $("#loveCount").text(Number(loveCount) - 1);
                 }).fail((res) => {
                     alert(res.responseJSON.msg);
                 });

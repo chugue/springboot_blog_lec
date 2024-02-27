@@ -28,8 +28,6 @@ public class LoveRepository {
     }
 
 
-
-
     public LoveResponse.DetailDTO findLove(int boardId) {
         String q = """
                 SELECT count(*) loveCount
@@ -81,7 +79,7 @@ public class LoveRepository {
             id = (Integer) row[0];
             isLove = (Boolean) row[1];
             loveCount = (Long) row[2];
-        }catch (Exception e){
+        } catch (Exception e) {
             id = 0;
             isLove = false;
             loveCount = 0L;
@@ -99,11 +97,15 @@ public class LoveRepository {
     }
 
     @Transactional
-    public void save(LoveRequest.SaveDTO requestDTO, int sessionUserId) {
+    public Love save(LoveRequest.SaveDTO requestDTO, int sessionUserId) {
         Query query = em.createNativeQuery("insert into love_tb(board_id, user_id, created_at) values(?,?, now())");
         query.setParameter(1, requestDTO.getBoardId());
         query.setParameter(2, sessionUserId);
 
         query.executeUpdate();
+
+        Query q = em.createNativeQuery("select * from love_tb where id =  (select max(id) from love_tb)", Love.class);
+        Love love = (Love) q.getSingleResult();
+        return love;
     }
 }

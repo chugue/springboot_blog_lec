@@ -42,7 +42,7 @@ public class LoveController {
             return new ApiUtil<>(401, "인증안됨");
         }
 
-        loveRepository.save(requestDTO, sessionUser.getId());
-        return new ApiUtil<>(null);
+        Love love = loveRepository.save(requestDTO, sessionUser.getId());
+        return new ApiUtil<>(love);
     }
 }
